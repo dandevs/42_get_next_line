@@ -34,6 +34,7 @@ class CommandWatcher(FileSystemEventHandler):
         self.debounce_seconds = debounce_seconds
         self._process: Optional[subprocess.Popen] = None
         self._last_run: float = 0
+        self._process_running = False
 
     def _matches_pattern(self, path: str) -> bool:
         """Check if file matches any of the glob patterns."""
@@ -86,8 +87,10 @@ class CommandWatcher(FileSystemEventHandler):
     def _stop_current_process(self) -> None:
         """Stop the currently running command and all its children."""
         if self._process is None or self._process.poll() is not None:
+            self._process_running = False
             return
-        
+
+        self._process_running = False
         print("[Stopping previous command...]")
         
         # On Windows, shell=True creates cmd.exe which spawns the actual process.
@@ -119,7 +122,7 @@ class CommandWatcher(FileSystemEventHandler):
     def run_command(self) -> None:
         """Run the command, stopping any previous instance first."""
         self._stop_current_process()
-        
+
         print(f"[Running: {self.command}]")
         print("-" * 50)
 
@@ -131,6 +134,13 @@ class CommandWatcher(FileSystemEventHandler):
             shell=True,
             start_new_session=(sys.platform != 'win32'),
         )
+        self._process_running = True
+
+    def check_process_completion(self) -> None:
+        """Check if the running process has completed and print message if so."""
+        if self._process_running and self._process and self._process.poll() is not None:
+            self._process_running = False
+            print("-- DONE --")
 
     def stop(self) -> None:
         """Clean up when stopping the watcher."""
@@ -280,6 +290,7 @@ def main() -> None:
         event_handler.run_command()  # Run initially
 
         while True:
+            event_handler.check_process_completion()
             time.sleep(1)
     except KeyboardInterrupt:
         print("\n[Stopping watcher...]")
