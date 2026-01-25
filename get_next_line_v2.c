@@ -1,4 +1,3 @@
-
 #include "fcntl.h"
 #include "stdlib.h"
 #include "unistd.h"
@@ -10,8 +9,8 @@ typedef struct s_line_reader
 {
 	char	*buffer;
 	char	*buffer_start;
+	int		bytes_left;
 	int		fd;
-	int		remaining_bytes;
 } t_line_reader;
 
 int		ft_strlen(char *str)
@@ -55,7 +54,7 @@ int	str_append(char **str_ptr, char *to_append, int max_length)
 	return (1);
 }
 
-t_line_reader	*get_rdl_entry(int fd)
+t_line_reader	*get_line_reader(int fd)
 {
 	static t_line_reader	*cache[4096];
 	t_line_reader			*entry;
@@ -65,64 +64,79 @@ t_line_reader	*get_rdl_entry(int fd)
 	if (!entry)
 	{
 		entry = malloc(sizeof(t_line_reader));
+		if (!entry)
+			return (NULL);
 		entry->fd = fd;
 		entry->buffer = malloc(BUFFER_SIZE);
+		if (!entry->buffer)
+			return (NULL);
 		entry->buffer_start = entry->buffer;
-		entry->remaining_bytes = read(fd, entry->buffer, BUFFER_SIZE);
+		entry->bytes_left = read(fd, entry->buffer, BUFFER_SIZE);
 		cache[fd] = entry;
 	}
 
 	return (entry);
 }
 
-void	rdl_entry_consume(t_line_reader *entry, int count)
+int	line_reader_consume(t_line_reader *entry, int count)
 {
 	if (count == 0)
 	{
-		if (entry->remaining_bytes == 0)
+		if (entry->bytes_left == 0)
 		{
 			entry->buffer = entry->buffer_start;
-			entry->remaining_bytes = read(entry->fd, entry->buffer, BUFFER_SIZE);
+			entry->bytes_left = read(entry->fd, entry->buffer, BUFFER_SIZE);
+			if (entry->bytes_left < 0)
+				return (0);
 		}
+		return (1);
 	}
 	else
 	{
 		entry->buffer += count;
-		entry->remaining_bytes -= count;
+		entry->bytes_left -= count;
+		return (1);
 	}
 }
 
 char	*read_line(int fd)
 {
 	t_line_reader	*entry;
-	char		*line;
-	int			i;
+	char			*line;
+	int				i;
+	
+	if (fd < 0 | fd >= 4096)
+		return (NULL);
 
 	line = malloc(1);
-	entry = get_rdl_entry(fd);
+	entry = get_line_reader(fd);
+
+	if (!line || !entry)
+		return (NULL);
 	*line = 0;
-	
 	while (1)
 	{
 		i = 0;
-		rdl_entry_consume(entry, 0);
+		if (!line_reader_consume(entry, 0))
+			return (NULL);
 
-		if (entry->remaining_bytes == 0)
+		if (entry->bytes_left <= 0)
 			break ;
 
-		while (i < entry->remaining_bytes && entry->buffer[i] != '\n')
+		while (i < entry->bytes_left && entry->buffer[i] != '\n')
 			i++;
 
 		if (entry->buffer[i] == '\n')
 		{
-			str_append(&line, entry->buffer, i + 1);
-			rdl_entry_consume(entry, i + 1);
+			if (!str_append(&line, entry->buffer, i + 1))
+				return (NULL);
+			line_reader_consume(entry, i + 1);
 			return (line);
 		}
 		else 
 		{
 			str_append(&line, entry->buffer, i);
-			rdl_entry_consume(entry, i);
+			line_reader_consume(entry, i);
 		}
 	}
 	return (line);
@@ -138,9 +152,5 @@ int	main(void)
 	printf("%s", read_line(fd_0));
 	printf("%s", read_line(fd_0));
 	printf("%s", read_line(fd_0));
-	// printf("%s", read_line(fd_0));
-	// printf("%s", read_line(fd_0));
-	// printf("%s", read_line(fd_0));
-	printf("\n----\n");
 	return (0);
 }

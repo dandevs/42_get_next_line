@@ -140,7 +140,7 @@ class CommandWatcher(FileSystemEventHandler):
         """Check if the running process has completed and print message if so."""
         if self._process_running and self._process and self._process.poll() is not None:
             self._process_running = False
-            print("-- DONE --")
+            print("[-- DONE --]")
 
     def stop(self) -> None:
         """Clean up when stopping the watcher."""
