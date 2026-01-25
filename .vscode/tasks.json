@@ -1,0 +1,26 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Build get_next_line_bonus",
+            "type": "shell",
+            "command": "gcc",
+            "args": [
+                "-g",
+                "-Wall",
+                "-Wextra",
+                "-Werror",
+                "${workspaceFolder}/get_next_line_bonus.c",
+                "${workspaceFolder}/get_next_line_utils_bonus.c",
+                "-o",
+                "${workspaceFolder}/gnl_bonus"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": true
+            },
+            "problemMatcher": ["$gcc"],
+            "detail": "Compiles get_next_line_bonus with debug symbols"
+        }
+    ]
+}
