@@ -2,32 +2,13 @@
 #include "stdlib.h"
 #include "unistd.h"
 #include "stdio.h"
+#include "get_next_line.h"
 
 #ifndef BUFFSER_SIZE
-# define BUFFER_SIZE 42
+# define BUFFER_SIZE 5
 #endif
 
-typedef struct s_line_reader
-{
-	char	*buffer;
-	char	*buffer_start;
-	int		fd;
-	int		bytes_left;
-}	t_line_reader;
-
-int	ft_strlen(char *str)
-{
-	int	len;
-
-	len = 0;
-	if (!str)
-		return (0);
-	while (str[len])
-		len++;
-	return (len);
-}
-
-int	str_append(char **str_ptr, char *to_append, int max_length)
+int	str_append(char **str_ptr, int str_len, char *to_append, int max_length)
 {
 	char	*str;
 	char	*temp;
@@ -35,7 +16,7 @@ int	str_append(char **str_ptr, char *to_append, int max_length)
 	int		j;
 
 	str = *str_ptr;
-	temp = malloc(ft_strlen(str) + max_length + 1);
+	temp = malloc(str_len + max_length + 1);
 	i = 0;
 	if (!temp)
 		return (-1);
@@ -59,23 +40,27 @@ int	str_append(char **str_ptr, char *to_append, int max_length)
 t_line_reader	*get_line_reader(int fd)
 {
 	static t_line_reader	*cache[4096];
-	t_line_reader			*entry;
+	t_line_reader			*reader;
 
-	entry = cache[fd];
-	if (!entry)
+	reader = cache[fd];
+	if (!reader)
 	{
-		entry = malloc(sizeof(t_line_reader));
-		if (!entry)
+		reader = malloc(sizeof(t_line_reader));
+		if (!reader)
 			return (NULL);
-		entry->fd = fd;
-		entry->buffer = malloc(BUFFER_SIZE);
-		if (!entry->buffer)
+		reader->buffer = malloc(BUFFER_SIZE);
+		if (!reader->buffer)
+		{
+			free(reader);
 			return (NULL);
-		entry->buffer_start = entry->buffer;
-		entry->bytes_left = read(fd, entry->buffer, BUFFER_SIZE);
-		cache[fd] = entry;
+		}
+		reader->fd = fd;
+		reader->buffer_start = reader->buffer;
+		reader->bytes_left = read(fd, reader->buffer, BUFFER_SIZE);
+		reader->bytes_read = 0;
+		cache[fd] = reader;
 	}
-	return (entry);
+	return (reader);
 }
 
 t_line_reader	*line_reader_consume(t_line_reader *reader, int count)
@@ -91,17 +76,16 @@ t_line_reader	*line_reader_consume(t_line_reader *reader, int count)
 	else
 	{
 		reader->buffer += count;
+		reader->bytes_read += count;
 		reader->bytes_left -= count;
 	}
 	return (reader);
 }
 
-char	*line_reader_read(t_line_reader *reader)
+int	line_reader_read(t_line_reader *reader, char **line)
 {
-	char	*line;
-	int		i;
+	int	i;
 
-	line = malloc(sizeof(char));
 	while (line_reader_consume(reader, 0)->bytes_left > 0)
 	{
 		i = 0;
@@ -109,55 +93,42 @@ char	*line_reader_read(t_line_reader *reader)
 			i++;
 		if (reader->buffer[i] == '\n')
 		{
-			if (!str_append(&line, reader->buffer, i + 1))
-				return (NULL);
+			if (!str_append(line, reader->bytes_read, reader->buffer, i + 1))
+				return (0);
 			line_reader_consume(reader, i + 1);
-			return (line);
+			return (1);
 		}
 		else
 		{
-			str_append(&line, reader->buffer, i);
+			str_append(line, reader->bytes_read, reader->buffer, i);
 			line_reader_consume(reader, i);
 		}
 	}
-	if (reader->bytes_left == 0)
-		return (line);
-	free(line);
-	return (NULL);
+	return (reader->bytes_left >= 0);
 }
 
 char	*read_line(int fd)
 {
 	t_line_reader	*reader;
 	char			*line;
-	int				i;
 
-	if (fd < 0 || fd >= 4096)
+	if (fd < 0 || fd >= 4096 || BUFFER_SIZE <= 0)
 		return (NULL);
-	line = malloc(1);
+	line = malloc(sizeof(char));
+	if (!line)
+		return (NULL);
 	reader = get_line_reader(fd);
-	if (!line || !reader)
+	if (!reader)
 		return (NULL);
 	*line = 0;
-	while (line_reader_consume(reader, 0)->fd > 0)
+	if (line_reader_read(reader, &line))
+		return (line);
+	else
 	{
-		i = 0;
-		while (i < reader->bytes_left && reader->buffer[i] != '\n')
-			i++;
-		if (reader->buffer[i] == '\n')
-		{
-			if (!str_append(&line, reader->buffer, i + 1))
-				return (NULL);
-			line_reader_consume(reader, i + 1);
-			return (line);
-		}
-		else
-		{
-			str_append(&line, reader->buffer, i);
-			line_reader_consume(reader, i);
-		}
+		free(reader);
+		free(line);
+		return (NULL);
 	}
-	return (line);
 }
 
 int	main(void)
