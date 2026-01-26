@@ -58,7 +58,7 @@ char	*get_next_line(int fd)
 	}
 	line = malloc(sizeof(char));
 	if (!line)
-		return (NULL);
+		return (multi_free(buffer_ptr, line));
 	line[0] = 0;
 	if (!read_line(fd, buffer_ptr, &line))
 		return (multi_free(buffer_ptr, line));
