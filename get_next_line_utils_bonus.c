@@ -13,7 +13,7 @@ int	ft_strlen(char *str)
 	return (len);
 }
 
-int	str_append(char **str_ptr, char *to_append, int max_length)
+int	str_append(char **str_ptr, char *to_append, int append_count)
 {
 	char	*str;
 	char	*temp;
@@ -21,7 +21,7 @@ int	str_append(char **str_ptr, char *to_append, int max_length)
 	int		j;
 
 	str = *str_ptr;
-	temp = malloc(sizeof(char) * (ft_strlen(str) + max_length + 1));
+	temp = malloc(sizeof(char) * (ft_strlen(str) + append_count + 1));
 	i = 0;
 	if (!temp)
 		return (0);
@@ -31,7 +31,7 @@ int	str_append(char **str_ptr, char *to_append, int max_length)
 		i++;
 	}
 	j = 0;
-	while (j < max_length && to_append[j])
+	while (j < append_count && to_append[j])
 	{
 		temp[i + j] = to_append[j];
 		j++;
