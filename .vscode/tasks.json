@@ -7,9 +7,6 @@
             "command": "gcc",
             "args": [
                 "-g",
-                "-Wall",
-                "-Wextra",
-                "-Werror",
                 "${workspaceFolder}/get_next_line_bonus.c",
                 "${workspaceFolder}/get_next_line_utils_bonus.c",
                 "-o",
