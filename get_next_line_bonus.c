@@ -13,6 +13,7 @@ char	**get_buffer_ptr(int fd)
 	static char	**cache[4096];
 	char		**buffer_ptr;
 	char		*buffer;
+	int			rd;
 
 	buffer_ptr = cache[fd];
 	if (!buffer_ptr)
@@ -21,9 +22,10 @@ char	**get_buffer_ptr(int fd)
 		buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
 		if (!buffer_ptr || !buffer)
 			return (multi_free(buffer_ptr, buffer));
-		if (read(fd, buffer, BUFFER_SIZE) <= 0)
+		rd = read(fd, buffer, BUFFER_SIZE);
+		if (rd <= 0)
 			return (multi_free(buffer_ptr, buffer));
-		buffer[BUFFER_SIZE] = 0;
+		buffer[rd] = 0;
 		buffer_ptr[0] = buffer;
 		buffer_ptr[1] = buffer;
 		cache[fd] = buffer_ptr;
@@ -39,7 +41,7 @@ int	read_line(int fd, char **buffer_ptr, char **line)
 	char	*buffer;
 
 	buffer = *buffer_ptr;
-	while (1)
+	while (buffer != NULL)
 	{
 		i = 0;
 		while (buffer[i] && buffer[i] != '\n')
@@ -65,6 +67,7 @@ int	read_line(int fd, char **buffer_ptr, char **line)
 		if (i < 0)
 			return (0);
 	}
+	return (0);
 }
 
 char	*get_next_line(int fd)
@@ -92,9 +95,13 @@ char	*get_next_line(int fd)
 // int	main(void)
 // {
 // 	int fd_0 = open("foo.txt", O_RDONLY);
-// 	printf("%s", get_next_line(fd_0));
-// 	printf("%s", get_next_line(fd_0));
-// 	printf("%s", get_next_line(fd_0));
-// 	printf("%s", get_next_line(fd_0));
+// 	char *line;
+// 	// printf("fd = %d\n", fd_0);
+// 	printf("%s", line = get_next_line(fd_0));
+// 	printf("%s", line = get_next_line(fd_0));
+// 	printf("%s", line = get_next_line(fd_0));
+// 	// printf("%s", line = get_next_line(fd_0));
+// 	// printf("%s", line = get_next_line(fd_0));
+// 	// printf("Hello World");
 // 	return (0);
 // }
