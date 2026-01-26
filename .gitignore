@@ -1,0 +1,28 @@
+# Compiled objects and libraries
+*.o
+*.a
+*.so
+*.dylib
+*.dll
+
+# Compiled output
+*.out
+*.gch
+gnl_bonus
+a.out
+
+# Editor and IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.DS_Store
+
+# Debugging files
+*.dSYM/
+*.su
+*.gdb_history
+
+# OS specific
+Thumbs.db

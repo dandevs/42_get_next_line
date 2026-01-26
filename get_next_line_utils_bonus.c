@@ -3,7 +3,17 @@
 #include <unistd.h>
 #include <fcntl.h>
 
-int	str_append(char **str_ptr, int str_len, char *to_append, int max_length)
+int	ft_strlen(char *str)
+{
+	int	len;
+
+	len = 0;
+	while (str[len])
+		len++;
+	return (len);
+}
+
+int	str_append(char **str_ptr, char *to_append, int max_length)
 {
 	char	*str;
 	char	*temp;
@@ -11,7 +21,7 @@ int	str_append(char **str_ptr, int str_len, char *to_append, int max_length)
 	int		j;
 
 	str = *str_ptr;
-	temp = malloc(str_len + max_length + 1);
+	temp = malloc(sizeof(char) * (ft_strlen(str) + max_length + 1));
 	i = 0;
 	if (!temp)
 		return (0);
@@ -45,10 +55,7 @@ t_line_reader	*get_line_reader(int fd)
 			return (NULL);
 		reader->buffer = malloc(BUFFER_SIZE);
 		if (!reader->buffer)
-		{
-			line_reader_free(&reader);
-			return (NULL);
-		}
+			return (0);
 		reader->fd = fd;
 		reader->buffer_start = reader->buffer;
 		reader->bytes_left = read(fd, reader->buffer, BUFFER_SIZE);
@@ -78,31 +85,31 @@ t_line_reader	*line_reader_consume(t_line_reader *reader, int count)
 	return (reader);
 }
 
-int	line_reader_read(t_line_reader *reader, char **line)
-{
-	int	i;
+// int	line_reader_read(t_line_reader *reader, char **line)
+// {
+// 	int	i;
 
-	while (line_reader_consume(reader, 0)->bytes_left > 0)
-	{
-		i = 0;
-		while (i < reader->bytes_left && reader->buffer[i] != '\n')
-			i++;
-		if (i < reader->bytes_left && reader->buffer[i] == '\n')
-		{
-			if (!str_append(line, reader->bytes_read, reader->buffer, i + 1))
-				return (line_reader_free(&reader));
-			line_reader_consume(reader, i + 1);
-			return (1);
-		}
-		else
-		{
-			if (!str_append(line, reader->bytes_read, reader->buffer, i))
-				return (line_reader_free(&reader));
-			line_reader_consume(reader, i);
-		}
-	}
-	return (reader->bytes_left >= 0);
-}
+// 	while (line_reader_consume(reader, 0)->bytes_left > 0)
+// 	{
+// 		i = 0;
+// 		while (i < reader->bytes_left && reader->buffer[i] != '\n')
+// 			i++;
+// 		if (i < reader->bytes_left && reader->buffer[i] == '\n')
+// 		{
+// 			if (!str_append(line, reader->bytes_read, reader->buffer, i + 1))
+// 				return (line_reader_free(&reader));
+// 			line_reader_consume(reader, i + 1);
+// 			return (1);
+// 		}
+// 		else
+// 		{
+// 			if (!str_append(line, reader->bytes_read, reader->buffer, i))
+// 				return (0);
+// 			line_reader_consume(reader, i);
+// 		}
+// 	}
+// 	return (reader->bytes_left > 0);
+// }
 
 int	line_reader_free(t_line_reader **reader)
 {

@@ -23,6 +23,7 @@ t_line_reader	*line_reader_consume(t_line_reader *reader, int count);
 int				line_reader_free(t_line_reader **reader);
 int				line_reader_read(t_line_reader *reader, char **line);
 char			*get_next_line(int fd);
-int				str_append(char **s_p, int s_l, char *a, int ml);
+int				str_append(char **s_p, char *a, int ml);
+int				ft_strlen(char *str);
 
 #endif
