@@ -1,59 +1,29 @@
 #include "get_next_line_bonus.h"
 #include <fcntl.h>
 
-void	*multi_free(void *ptr_0, void *ptr_1)
-{
-	free(ptr_0);
-	free(ptr_1);
-	return (NULL);
-}
-
-char	**get_buffer_ptr(int fd)
-{
-	static char	**cache[4096];
-	char		**buffer_ptr;
-	char		*buffer;
-	int			rd;
-
-	buffer_ptr = cache[fd];
-	if (!buffer_ptr)
-	{
-		buffer_ptr = malloc(sizeof(char **) * 2);
-		buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
-		if (!buffer_ptr || !buffer)
-			return (multi_free(buffer_ptr, buffer));
-		rd = read(fd, buffer, BUFFER_SIZE);
-		if (rd <= 0)
-			return (multi_free(buffer_ptr, buffer));
-		buffer[rd] = 0;
-		buffer_ptr[0] = buffer;
-		buffer_ptr[1] = buffer;
-		cache[fd] = buffer_ptr;
-	}
-	if (!*buffer_ptr)
-		return (NULL);
-	return (buffer_ptr);
-}
-
 int	read_line(int fd, char **buffer_ptr, char **line)
 {
 	int		i;
 	char	*buffer;
+	int		len;
 
 	buffer = *buffer_ptr;
-	while (buffer != NULL)
+	len = 0;
+	while (1)
 	{
 		i = 0;
 		while (buffer[i] && buffer[i] != '\n')
 			i++;
 		if (buffer[i] == '\n')
 		{
-			str_append(line, buffer, i + 1);
+			str_append(line, len, buffer, i + 1);
 			buffer += i + 1;
+			len += i + 1;
 			*buffer_ptr = buffer;
 			return (1);
 		}
-		str_append(line, buffer, i);
+		len += i;
+		str_append(line, len, buffer, i);
 		buffer = buffer_ptr[1];
 		i = read(fd, buffer, BUFFER_SIZE);
 		buffer[i] = 0;
@@ -62,12 +32,14 @@ int	read_line(int fd, char **buffer_ptr, char **line)
 		{
 			free(buffer);
 			*buffer_ptr = NULL;
-			return (1);
+			// if (**line == 0)
+			// 	return (0);
+			// return (1);
+			return (**line != 0);
 		}
 		if (i < 0)
 			return (0);
 	}
-	return (0);
 }
 
 char	*get_next_line(int fd)
@@ -95,13 +67,18 @@ char	*get_next_line(int fd)
 // int	main(void)
 // {
 // 	int fd_0 = open("foo.txt", O_RDONLY);
-// 	char *line;
-// 	// printf("fd = %d\n", fd_0);
-// 	printf("%s", line = get_next_line(fd_0));
-// 	printf("%s", line = get_next_line(fd_0));
-// 	printf("%s", line = get_next_line(fd_0));
-// 	// printf("%s", line = get_next_line(fd_0));
-// 	// printf("%s", line = get_next_line(fd_0));
-// 	// printf("Hello World");
+// 	char *results[32];
+// 	int i;
+
+
+// 	results[0] = get_next_line(fd_0);
+// 	results[1] = get_next_line(fd_0);
+// 	// for (i = 0; i < 32; i++)
+// 	// {
+// 	// 	results[i] = get_next_line(fd_0);
+// 	// 	if (results[i])
+// 	// 		printf("%s\n", results[i]);
+// 	// }
+	
 // 	return (0);
 // }

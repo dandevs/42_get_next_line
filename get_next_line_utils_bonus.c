@@ -1,7 +1,38 @@
 #include "get_next_line_bonus.h"
-#include <stdlib.h>
-#include <unistd.h>
-#include <fcntl.h>
+
+void	*multi_free(void *ptr_0, void *ptr_1)
+{
+	free(ptr_0);
+	free(ptr_1);
+	return (NULL);
+}
+
+char	**get_buffer_ptr(int fd)
+{
+	static char	**cache[4096];
+	char		**buffer_ptr;
+	char		*buffer;
+	int			rd;
+
+	buffer_ptr = cache[fd];
+	if (!buffer_ptr)
+	{
+		buffer_ptr = malloc(sizeof(char **) * 2);
+		buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
+		if (!buffer_ptr || !buffer)
+			return (multi_free(buffer_ptr, buffer));
+		rd = read(fd, buffer, BUFFER_SIZE);
+		if (rd <= 0)
+			return (multi_free(buffer_ptr, buffer));
+		buffer[rd] = 0;
+		buffer_ptr[0] = buffer;
+		buffer_ptr[1] = buffer;
+		cache[fd] = buffer_ptr;
+	}
+	if (!*buffer_ptr)
+		return (NULL);
+	return (buffer_ptr);
+}
 
 int	ft_strlen(char *str)
 {
@@ -13,7 +44,7 @@ int	ft_strlen(char *str)
 	return (len);
 }
 
-int	str_append(char **str_ptr, char *to_append, int append_count)
+int	str_append(char **str_ptr, int str_len, char *to_append, int append_count)
 {
 	char	*str;
 	char	*temp;
@@ -21,7 +52,7 @@ int	str_append(char **str_ptr, char *to_append, int append_count)
 	int		j;
 
 	str = *str_ptr;
-	temp = malloc(sizeof(char) * (ft_strlen(str) + append_count + 1));
+	temp = malloc(sizeof(char) * str_len + append_count + 1);
 	i = 0;
 	if (!temp)
 		return (0);
