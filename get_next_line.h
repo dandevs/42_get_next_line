@@ -1,22 +1,19 @@
 #ifndef GET_NEXT_LINE_BONUS_H
 # define GET_NEXT_LINE_BONUS_H
 
+# ifndef BUFFER_SIZE
+#  define BUFFER_SIZE 42
+# endif
+
 # include <stdlib.h>
 # include <unistd.h>
+# include <stdio.h>
+# include <fcntl.h>
 
-typedef struct s_line_reader
-{
-	char	*buffer;
-	char	*buffer_start;
-	int		fd;
-	int		bytes_left;
-	int		bytes_read;
-}	t_line_reader;
-
-int				str_append(char **s_p, int s_l, char *a, int ml);
-t_line_reader	*get_line_reader(int fd);
-t_line_reader	*line_reader_consume(t_line_reader *reader, int count);
-int				line_reader_read(t_line_reader *reader, char **line);
-char			*get_next_line(int fd);
+char	*get_next_line(int fd);
+int		str_append(char **s_ptr, int s_len, char *to_apnd, int apnd_count);
+int		ft_strlen(char *str);
+void	*multi_free(void *ptr_0, void *ptr_1);
+char	**get_buffer_ptr(int fd);
 
 #endif
