@@ -12,8 +12,8 @@
 
 char	*get_next_line(int fd);
 int		str_append(char **s_ptr, int s_len, char *to_apnd, int apnd_count);
-int		ft_strlen(char *str);
 void	*multi_free(void *ptr_0, void *ptr_1);
 char	**get_buffer_ptr(int fd);
+char	***get_cache(void);
 
 #endif
