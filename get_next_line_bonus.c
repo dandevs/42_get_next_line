@@ -62,7 +62,7 @@ char	*get_next_line(int fd)
 		return (multi_free(buffer_ptr, line));
 	line[0] = 0;
 	if (!read_line(fd, buffer_ptr, &line))
-		return (multi_free(buffer_ptr, line));
+		return (multi_free(get_cache()[fd], line));
 	return (line);
 }
 
@@ -71,7 +71,7 @@ int	main(void)
 	int fd = open("foo.txt", O_RDONLY);
 	int i;
 
-	for (i = 0; i < 10; i++)
+	for (i = 0; i < 123; i++)
 	{
 		char *line = get_next_line(fd);
 		printf("%s", line);

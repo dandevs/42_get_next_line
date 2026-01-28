@@ -8,8 +8,10 @@ char	***get_cache()
 
 void	*multi_free(void *ptr_0, void *ptr_1)
 {
-	free(ptr_0);
-	free(ptr_1);
+	if (ptr_0 && ptr_0 != (void *)-1)
+		free(ptr_0);
+	if (ptr_1 && ptr_1 != (void *)-1)
+		free(ptr_1);
 	return (NULL);
 }
 
@@ -43,15 +45,15 @@ char	**get_buffer_ptr(int fd)
 	return (buffer_ptr);
 }
 
-static int	ft_strlen(char *str)
-{
-	int	len;
+// static int	ft_strlen(char *str)
+// {
+// 	int	len;
 
-	len = 0;
-	while (str[len])
-		len++;
-	return (len);
-}
+// 	len = 0;
+// 	while (str[len])
+// 		len++;
+// 	return (len);
+// }
 
 int	str_append(char **str_ptr, int str_len, char *to_append, int append_count)
 {
