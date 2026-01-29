@@ -1,66 +1,112 @@
-#include "get_next_line_bonus.h"
 #include <fcntl.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <limits.h>
+#include <unistd.h>
+#define BUFFER_SIZE 8
 
-static int	append_cause_newline(int len, int i, char **buffer_ptr, char **line)
+unsigned int	*get_buffer()
 {
-	str_append(line, len, *buffer_ptr, i + 1);
-	*buffer_ptr += i + 1;
-	return (1);
+	static unsigned int	buffer[BUFFER_SIZE + 3];
+	return (buffer);
 }
 
-static int	append_cause_eof(char **buffer_ptr, char **line)
+int	append_to_str(char **line, int line_len, char *to_append, int append_len)
 {
-	free(*buffer_ptr);
-	*buffer_ptr = NULL;
-	return (**line != 0);
-}
-
-int	read_line(int fd, char **buffer_ptr, char **line)
-{
+	char	*str;
 	int		i;
-	char	*buffer;
-	int		len;
+	int		j;
 
-	buffer = *buffer_ptr;
-	len = 0;
-	while (1)
+	str = malloc(sizeof(char) * (line_len + append_len + 1));
+	if (!str)
+		return (-1);
+	i = 0;
+	j = 0;
+	while (i < line_len)
 	{
-		i = 0;
-		while (buffer[i] && buffer[i] != '\n')
-			i++;
-		if (buffer[i] == '\n')
-			return (append_cause_newline(len, i, buffer_ptr, line));
-		len += i;
-		str_append(line, len, buffer, i);
-		buffer = buffer_ptr[1];
-		i = read(fd, buffer, BUFFER_SIZE);
-		buffer[i] = 0;
-		*buffer_ptr = buffer;
-		if (i == 0)
-			return (append_cause_eof(buffer_ptr, line));
-		if (i < 0)
-			return (0);
+		str[i] = (*line)[i];
+		i++;
 	}
+	while (j < append_len)
+		str[i++] = to_append[j++];
+	str[i] = 0;
+	free(*line);
+	*line = str;
+	return (i);
 }
 
 char	*get_next_line(int fd)
 {
-	char			**buffer_ptr;
-	char			*line;
+	static char	leftover[BUFFER_SIZE + 1];
+	char		buffer[BUFFER_SIZE];
+	char		*line;
+	int			rd;
+	int			i;
+	int			len;
 
-	if (fd < 0 || fd >= 4096 || BUFFER_SIZE <= 0)
+	rd = read(fd, buffer, BUFFER_SIZE);
+	if (rd <= 0)
 		return (NULL);
-	buffer_ptr = get_buffer_ptr(fd);
-	if (!buffer_ptr)
-	{
-		free(buffer_ptr);
-		return (NULL);
-	}
 	line = malloc(sizeof(char));
 	if (!line)
-		return (multi_free(buffer_ptr, line));
-	line[0] = 0;
-	if (!read_line(fd, buffer_ptr, &line))
-		return (multi_free(buffer_ptr, line));
-	return (line);
+		return (NULL);
+	*line = 0;
+
+	i = 0;
+	len = 0;
+	while (leftover[i])
+		i++;
+	if (i)
+		len = append_to_str(&line, 0, leftover, i);
+	if (len < 0)
+		return (NULL);
+
+	while (1)
+	{
+		if (rd <= 0)
+		{
+			if (*line != 0)
+				return (line);
+			return (NULL);
+		}
+		i = 0;
+		while (i < rd && buffer[i] != '\n')
+			i++;
+		if (buffer[i] == '\n')
+		{
+			len = append_to_str(&line, len, buffer, ++i);
+			if (len >= 0)
+			{
+				int j = 0;
+				while (j < (rd - i))
+					leftover[j++] = buffer[i + j];
+				leftover[j] = 0;
+				return (line);
+			}
+			return (NULL);
+		}
+		else
+		{
+			len = append_to_str(&line, len, buffer, rd);
+			if (len < 0)
+				return (NULL);
+		}
+	}
+	
+	return (NULL);
+}
+
+int	main(void)
+{
+	int fd = open("foo.txt", O_RDONLY);
+	int i;
+
+	for (i = 0; i < 10; i++)
+	{
+		char *line = get_next_line(fd);
+		printf("%s", line);
+		free(line);
+	}
+
+	close(fd);
 }
