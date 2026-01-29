@@ -5,15 +5,29 @@
 #  define BUFFER_SIZE 42
 # endif
 
-# include <stdlib.h>
-# include <unistd.h>
-# include <stdio.h>
 # include <fcntl.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <limits.h>
+# include <unistd.h>
 
+typedef struct s_gnl
+{
+	char	*buffer_start;
+	char	*buffer;
+}	t_gnl;
+
+typedef struct s_gnl_cache
+{
+	char	buffer[BUFFER_SIZE + 2];
+	t_gnl	gnl;
+	int		initialized;
+}	t_gnl_cache;
+
+t_gnl	*get_gnl(int fd);
 char	*get_next_line(int fd);
-int		str_append(char **s_ptr, int s_len, char *to_apnd, int apnd_count);
-void	*multi_free(void *ptr_0, void *ptr_1);
-char	**get_buffer_ptr(int fd);
-char	***get_cache(void);
+int		append_to_str(char **line, int line_len, char *app, int app_len);
+char	*refill_buffer(int fd, t_gnl *gnl, char *line);
+char	*iterate_next_line_buffer(t_gnl *gnl, char **line, int *len);
 
 #endif

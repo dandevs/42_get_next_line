@@ -1,80 +1,47 @@
 #include "get_next_line_bonus.h"
-#include <fcntl.h>
 
-static int	append_cause_newline(int len, int i, char **buffer_ptr, char **line)
+static char	*try_get_next_line(int fd)
 {
-	str_append(line, len, *buffer_ptr, i + 1);
-	*buffer_ptr += i + 1;
-	return (1);
-}
-
-static int	append_cause_eof(char **buffer_ptr, char **line, int fd)
-{
-	free(buffer_ptr[1]);
-	free(buffer_ptr);
-	get_cache()[fd] = (void *)-1;
-	return (**line != 0);
-}
-
-int	read_line(int fd, char **buffer_ptr, char **line)
-{
-	int		i;
-	char	*buffer;
+	t_gnl	*gnl;
+	char	*line;
+	char	*ret;
 	int		len;
 
-	buffer = *buffer_ptr;
+	gnl = get_gnl(fd);
+	if (!gnl)
+		return (NULL);
+	line = malloc(sizeof(char));
+	if (!line)
+		return (NULL);
 	len = 0;
+	*line = 0;
 	while (1)
 	{
-		i = 0;
-		while (buffer[i] && buffer[i] != '\n')
-			i++;
-		if (buffer[i] == '\n')
-			return (append_cause_newline(len, i, buffer_ptr, line));
-		len += i;
-		str_append(line, len, buffer, i);
-		buffer = buffer_ptr[1];
-		i = read(fd, buffer, BUFFER_SIZE);
-		buffer[i] = 0;
-		*buffer_ptr = buffer;
-		if (i == 0)
-			return (append_cause_eof(buffer_ptr, line, fd));
-		if (i < 0)
-			return (0);
+		if (*gnl->buffer == 0)
+		{
+			ret = refill_buffer(fd, gnl, line);
+			if (ret != (void *)-1)
+				return (ret);
+		}
+		if (iterate_next_line_buffer(gnl, &line, &len) != (void *)-1)
+			return (line);
 	}
 }
 
 char	*get_next_line(int fd)
 {
-	char			**buffer_ptr;
-	char			*line;
+	char	*line;
+	t_gnl	*gnl;
 
-	if (fd < 0 || fd >= 1024 || BUFFER_SIZE <= 0)
+	if (BUFFER_SIZE < 0 || fd < 0 || fd >= 1024)
 		return (NULL);
-	buffer_ptr = get_buffer_ptr(fd);
-	if (!buffer_ptr)
+	line = try_get_next_line(fd);
+	if (line == NULL)
 	{
-		free(buffer_ptr);
+		gnl = get_gnl(fd);
+		if (gnl)
+			gnl->buffer_start[0] = 0;
 		return (NULL);
 	}
-	line = malloc(sizeof(char));
-	if (!line)
-		return (multi_free(buffer_ptr, line));
-	line[0] = 0;
-	if (!read_line(fd, buffer_ptr, &line))
-		return (multi_free(get_cache()[fd], line));
 	return (line);
 }
-
-// int	main(void)
-// {
-// 	int fd = open("foo.txt", O_RDONLY);
-// 	int i;
-
-// 	for (i = 0; i < 123; i++)
-// 	{
-// 		char *line = get_next_line(fd);
-// 		printf("%s", line);
-// 		free(line);
-// 	}
-// }

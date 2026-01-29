@@ -5,16 +5,16 @@
 #  define BUFFER_SIZE 42
 # endif
 
-#include <fcntl.h>
-#include <stdio.h>
-#include <stdlib.h>
-#include <limits.h>
-#include <unistd.h>
+# include <fcntl.h>
+# include <stdio.h>
+# include <stdlib.h>
+# include <limits.h>
+# include <unistd.h>
 
-typedef	struct	s_gnl
+typedef struct s_gnl
 {
-	char *buffer_start;
-	char *buffer;
+	char	*buffer_start;
+	char	*buffer;
 }	t_gnl;
 
 t_gnl	*get_gnl(void);
