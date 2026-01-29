@@ -2,17 +2,13 @@
 
 t_gnl	*get_gnl(int fd)
 {
-	static t_gnl_cache	cache[1024];
+	static t_gnl	cache[1024];
 
 	if (fd < 0 || fd >= 1024)
 		return (NULL);
-	if (!cache[fd].initialized)
-	{
-		cache[fd].gnl.buffer_start = cache[fd].buffer;
-		cache[fd].gnl.buffer = cache[fd].buffer;
-		cache[fd].initialized = 1;
-	}
-	return (&cache[fd].gnl);
+	if (!cache[fd].buffer)
+		cache[fd].buffer = cache[fd].buffer_start;
+	return (&cache[fd]);
 }
 
 int	append_to_str(char **line, int line_len, char *app, int app_len)

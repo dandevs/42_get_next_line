@@ -13,16 +13,9 @@
 
 typedef struct s_gnl
 {
-	char	*buffer_start;
+	char	buffer_start[BUFFER_SIZE + 1];
 	char	*buffer;
 }	t_gnl;
-
-typedef struct s_gnl_cache
-{
-	int		initialized;
-	char	buffer[BUFFER_SIZE + 1];
-	t_gnl	gnl;
-}	t_gnl_cache;
 
 t_gnl	*get_gnl(int fd);
 char	*get_next_line(int fd);
