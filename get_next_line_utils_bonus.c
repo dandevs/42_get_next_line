@@ -46,13 +46,11 @@ char	*refill_buffer(int fd, t_gnl *gnl, char *line)
 	rd = read(fd, gnl->buffer_start, BUFFER_SIZE);
 	if (rd < 0)
 	{
-		gnl->buffer_start[BUFFER_SIZE + 1] = 1;
 		free(line);
 		return (NULL);
 	}
 	else if (rd == 0)
 	{
-		gnl->buffer_start[BUFFER_SIZE + 1] = 1;
 		if (line && *line)
 			return (line);
 		free(line);

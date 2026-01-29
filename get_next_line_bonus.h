@@ -19,9 +19,9 @@ typedef struct s_gnl
 
 typedef struct s_gnl_cache
 {
-	char	buffer[BUFFER_SIZE + 2];
-	t_gnl	gnl;
 	int		initialized;
+	char	buffer[BUFFER_SIZE + 1];
+	t_gnl	gnl;
 }	t_gnl_cache;
 
 t_gnl	*get_gnl(int fd);
