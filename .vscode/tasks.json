@@ -18,6 +18,20 @@
             },
             "problemMatcher": ["$gcc"],
             "detail": "Compiles get_next_line_bonus with debug symbols"
+        },
+        {
+            "label": "Build get_next_line",
+            "type": "shell",
+            "command": "cc",
+            "args": [
+                "-g",
+                "${workspaceFolder}/get_next_line.c",
+                "-o",
+                "${workspaceFolder}/gnl"
+            ],
+            "group": "build",
+            "problemMatcher": ["$gcc"],
+            "detail": "Compiles get_next_line with debug symbols"
         }
     ]
 }

@@ -21,6 +21,27 @@
                 }
             ],
             "preLaunchTask": "Build get_next_line_bonus"
+        },
+        {
+            "name": "Debug get_next_line",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/gnl",
+            "args": [],
+            "stopAtEntry": false,
+            "cwd": "${workspaceFolder}",
+            "environment": [],
+            "externalConsole": false,
+            "MIMode": "gdb",
+            "miDebuggerPath": "/usr/bin/gdb",
+            "setupCommands": [
+                {
+                    "description": "Enable pretty-printing for gdb",
+                    "text": "-enable-pretty-printing",
+                    "ignoreFailures": true
+                }
+            ],
+            "preLaunchTask": "Build get_next_line"
         }
     ]
 }
