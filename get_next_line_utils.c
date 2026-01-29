@@ -1,4 +1,10 @@
-#include "get_next_line_bonus.h"
+#include "get_next_line.h"
+
+char	***get_cache()
+{
+	static char **cache[1024];
+	return (cache);
+}
 
 void	*multi_free(void *ptr_0, void *ptr_1)
 {
@@ -7,34 +13,16 @@ void	*multi_free(void *ptr_0, void *ptr_1)
 	return (NULL);
 }
 
-char	**get_buffer_ptr(int fd)
+char	*get_buffer_ptr(int fd)
 {
-	static char	**cache[4096];
-	char		**buffer_ptr;
-	char		*buffer;
+	static char	buffer[BUFFER_SIZE + 1];
 	int			rd;
 
-	buffer_ptr = cache[fd];
-	if (!buffer_ptr)
-	{
-		buffer_ptr = malloc(sizeof(char **) * 2);
-		buffer = malloc(sizeof(char) * (BUFFER_SIZE + 1));
-		if (!buffer_ptr || !buffer)
-			return (multi_free(buffer_ptr, buffer));
-		rd = read(fd, buffer, BUFFER_SIZE);
-		if (rd <= 0)
-			return (multi_free(buffer_ptr, buffer));
-		buffer[rd] = 0;
-		buffer_ptr[0] = buffer;
-		buffer_ptr[1] = buffer;
-		cache[fd] = buffer_ptr;
-	}
-	if (!*buffer_ptr)
+	if (buffer[BUFFER_SIZE] == 1)
 		return (NULL);
-	return (buffer_ptr);
 }
 
-int	ft_strlen(char *str)
+static int	ft_strlen(char *str)
 {
 	int	len;
 

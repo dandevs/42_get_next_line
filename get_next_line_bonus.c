@@ -66,15 +66,15 @@ char	*get_next_line(int fd)
 	return (line);
 }
 
-int	main(void)
-{
-	int fd = open("foo.txt", O_RDONLY);
-	int i;
+// int	main(void)
+// {
+// 	int fd = open("foo.txt", O_RDONLY);
+// 	int i;
 
-	for (i = 0; i < 123; i++)
-	{
-		char *line = get_next_line(fd);
-		printf("%s", line);
-		free(line);
-	}
-}
+// 	for (i = 0; i < 123; i++)
+// 	{
+// 		char *line = get_next_line(fd);
+// 		printf("%s", line);
+// 		free(line);
+// 	}
+// }
