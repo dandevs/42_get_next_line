@@ -33,7 +33,7 @@ char	*get_next_line(int fd)
 	char	*line;
 	t_gnl	*gnl;
 
-	if (BUFFER_SIZE < 0 || fd < 0 || fd >= 1024)
+	if (BUFFER_SIZE < 0 || fd < 0 || fd >= 512)
 		return (NULL);
 	line = try_get_next_line(fd);
 	if (line == NULL)

@@ -7,7 +7,7 @@ static char	*try_get_next_line(int fd)
 	char		*ret;
 	int			len;
 
-	if (BUFFER_SIZE < 0 || fd < 0 || fd >= 1024)
+	if (BUFFER_SIZE < 0 || fd < 0 || fd >= 512)
 		return (NULL);
 	gnl = get_gnl();
 	line = malloc(sizeof(char));

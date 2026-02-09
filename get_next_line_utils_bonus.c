@@ -2,9 +2,9 @@
 
 t_gnl	*get_gnl(int fd)
 {
-	static t_gnl	cache[1024];
+	static t_gnl	cache[512];
 
-	if (fd < 0 || fd >= 1024)
+	if (fd < 0 || fd >= 512)
 		return (NULL);
 	if (!cache[fd].buffer)
 		cache[fd].buffer = cache[fd].buffer_start;
