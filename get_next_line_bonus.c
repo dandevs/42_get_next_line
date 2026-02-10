@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: danimend <danimend@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/02/10 12:45:24 by danimend          #+#    #+#             */
+/*   Updated: 2026/02/10 13:06:36 by danimend         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "get_next_line_bonus.h"
 
 static char	*try_get_next_line(int fd)
@@ -45,3 +57,19 @@ char	*get_next_line(int fd)
 	}
 	return (line);
 }
+
+// int	main(void)
+// {
+// 	int fd = open("get_next_line.c", O_RDONLY);
+// 	int i;
+
+// 	for (i = 0; i < 1500; i++)
+// 	{
+// 		char *line = get_next_line(fd);
+// 		printf("%s", line);
+// 		free(line);
+// 	}
+
+// 	close(fd);
+//     return (0);
+// }

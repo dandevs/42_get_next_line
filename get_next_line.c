@@ -1,3 +1,15 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: danimend <danimend@student.42.fr>          +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2026/02/10 12:45:42 by danimend          #+#    #+#             */
+/*   Updated: 2026/02/10 13:06:37 by danimend         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
+
 #include "get_next_line.h"
 
 static char	*try_get_next_line(int fd)
@@ -45,13 +57,12 @@ char	*get_next_line(int fd)
 // int	main(void)
 // {
 // 	// int fd = open("gnlTester/files/multiple_nlx5", O_RDONLY);
-// 	int fd = open("foo.txt", O_RDONLY);
+// 	int fd = open("get_next_line.c", O_RDONLY);
 // 	int i;
 
-// 	for (i = 0; i < 20; i++)
+// 	for (i = 0; i < 10; i++)
 // 	{
 // 		char *line = get_next_line(fd);
-// 		// printf("[%d]%s", i, line);
 // 		printf("%s", line);
 // 		free(line);
 // 	}

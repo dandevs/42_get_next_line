@@ -1,9 +1,14 @@
 *This project has been created as part of the 42 curriculum by danimend*
 
 ## Description
-get_next_line has very straight goals; return line by line (delimited by \n) from a file per call of get_next_line(int fd), where fd is a FILE_DESCRIPTOR
+get_next_line has very straight goals; return line by line continously (delimited by \n) from a file per call of get_next_line(int fd), where fd is a FILE_DESCRIPTOR
 
 ## Instructions
+
+Mandatory: `cc -Wextra -Wall -Werror -g3 get_next_line_utils.c get_next_line.c`
+
+Bonus: `cc -Wextra -Wall -Werror -g3 get_next_line_bonus_utils.c get_next_bonus_line.c`
+
 ```c
 int	main(void)
 {
@@ -25,7 +30,7 @@ int	main(void)
 ## Resources
 
 * man pages for `open` and `read`
-* AI was used for some nuanced questions about the API eg `Does read append newline automatically?`
+* AI was used for some nuanced questions about the API eg `Does read() append newline automatically?`
 
 ## Implementation
 This implementation of get_next_line works by a rolling buffer. When we call get_next_line(), we fill in the buffer where:
@@ -43,3 +48,5 @@ The s_gnl struct maintains state across function calls using a static variable:
 * `buffer` - Moving pointer that tracks current position within buffer
 
 This allows us to use a single static variable, but house multiple fields in struct for more flexibility.
+
+Multi FD is largely the same apart from some minor adjustments.
