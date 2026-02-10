@@ -5,9 +5,9 @@ get_next_line has very straight goals; return line by line continously (delimite
 
 ## Instructions
 
-Mandatory: `cc -Wextra -Wall -Werror -g3 get_next_line_utils.c get_next_line.c`
+Mandatory: `cc -Wextra -Wall -Werror get_next_line_utils.c get_next_line.c`
 
-Bonus: `cc -Wextra -Wall -Werror -g3 get_next_line_bonus_utils.c get_next_bonus_line.c`
+Bonus: `cc -Wextra -Wall -Werror get_next_line_utils_bonus.c get_next_line_bonus.c`
 
 ```c
 int	main(void)
