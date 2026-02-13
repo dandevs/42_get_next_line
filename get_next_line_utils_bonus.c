@@ -6,7 +6,7 @@
 /*   By: danimend <danimend@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/10 12:45:36 by danimend          #+#    #+#             */
-/*   Updated: 2026/02/10 12:46:32 by danimend         ###   ########.fr       */
+/*   Updated: 2026/02/13 18:32:19 by danimend         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -78,11 +78,13 @@ char	*iterate_next_line_buffer(t_gnl *gnl, char **line, int *len)
 		i++;
 	if (gnl->buffer[i] == '\n')
 	{
-		append_to_str(line, *len, gnl->buffer, i + 1);
+		if (append_to_str(line, *len, gnl->buffer, i + 1) < 0)
+			return (NULL);
 		gnl->buffer += i + 1;
 		return (*line);
 	}
-	append_to_str(line, *len, gnl->buffer, i);
+	if (append_to_str(line, *len, gnl->buffer, i) < 0)
+		return (NULL);
 	gnl->buffer += i;
 	*len += i;
 	return ((void *)-1);

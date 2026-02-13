@@ -6,7 +6,7 @@
 /*   By: danimend <danimend@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2026/02/10 12:45:42 by danimend          #+#    #+#             */
-/*   Updated: 2026/02/10 13:06:37 by danimend         ###   ########.fr       */
+/*   Updated: 2026/02/13 18:25:37 by danimend         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,8 +35,9 @@ static char	*try_get_next_line(int fd)
 			if (ret != (void *)-1)
 				return (ret);
 		}
-		if (iterate_next_line_buffer(gnl, &line, &len) != (void *)-1)
-			return (line);
+		ret = iterate_next_line_buffer(gnl, &line, &len);
+		if (ret != (void *)-1)
+			return (ret);
 	}
 }
 

@@ -35,8 +35,9 @@ static char	*try_get_next_line(int fd)
 			if (ret != (void *)-1)
 				return (ret);
 		}
-		if (iterate_next_line_buffer(gnl, &line, &len) != (void *)-1)
-			return (line);
+		ret = iterate_next_line_buffer(gnl, &line, &len);
+		if (ret != (void *)-1)
+			return (ret);
 	}
 }
 
